@@ -1,0 +1,37 @@
+---
+# tasks file for nginx
+
+- selinux:
+    policy: targeted
+    state: permissive
+
+- name: Inatall nginx  
+  dnf:
+    name: nginx
+    state: latest
+    update_cache: true
+  notify: activate_firewall
+- meta: flush_handlers
+
+- name: enable & restart nginx
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+  notify: activate_firewall
+- meta: flush_handlers
+
+- name: allow port 80
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+- name: allow port 22
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+  notify:
+    - reload_firewalld
+- meta: flush_handlers
