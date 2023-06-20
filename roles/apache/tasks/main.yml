@@ -1,0 +1,29 @@
+# tasks file for apache
+- selinux:
+    policy: targeted
+    state: permissive
+
+- name: install httpd
+  dnf:
+    name: httpd
+    state: installed
+
+- name: install firewalld
+  dnf:
+    name: firewalld
+    state: installed
+
+- name: start and enable httpd
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
+ 
+- name: permit traffic in default zone for https service
+  firewalld:
+    port: 80/tcp
+    permanent: yes
+    state: enabled
+  notify:
+    - firewalld_reload
+- meta: flush_handlers
