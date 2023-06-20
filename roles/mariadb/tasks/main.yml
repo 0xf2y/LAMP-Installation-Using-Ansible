@@ -1,0 +1,36 @@
+---
+# tasks file for mariadb
+- selinux:
+    policy: targeted
+    state: permissive
+
+- name: Push MariaDB repo
+  copy:
+    src: maria.repo
+    dest: /etc/yum.repos.d/ 
+  notify:
+    - dnf_clean
+- meta: flush_handlers
+
+- name: Install MariaDB pkgs
+  dnf:
+    name:
+      - MariaDB-server 
+      - MariaDB-client
+    state: latest
+
+- name: Enable & restart service
+  systemd:
+    name: mariadb
+    enabled: yes
+    state: started
+
+- name: allow mariadb port
+  firewalld:
+    port: 3306/tcp
+    zone: public
+    state: enabled
+    permanent: true
+  notify:
+    - firewalld_reload
+- meta: flush_handlers
