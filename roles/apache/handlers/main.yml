@@ -1,0 +1,6 @@
+---
+# handlers file for apache
+- name: firewalld_reload  
+  systemd:
+     name: firewalld
+     state: reloaded
